@@ -3,12 +3,63 @@
   "useIso": false,
   "isoPath": "debian-13.3.0-amd64-netinst.iso",
   "diskPath": "deb.img",
-  "memoryMB": 4096,
-  "cpus": 2,
+  "memoryMB": 8192,
+  "cpus": 4,
   "diskFormat": "qcow2",
   "compatMode": true,
+  "networkDevice": "e1000",
+  "videoDevice": "std",
+  "inputDevices": [],
   "machine": "pc",
-  "display": "sdl",
-  "accel": "whpx,kernel-irqchip=off",
-  "cpu": "qemu64"
+  "display": "gtk,window-close=off,gl=off,grab-on-hover=on,show-tabs=on",
+  "accel": "tcg",
+  "cpu": "qemu64",
+  "hostForwards": [
+    {
+      "protocol": "tcp",
+      "hostAddress": "127.0.0.1",
+      "hostPort": 443,
+      "guestPort": 443
+    },
+    {
+      "protocol": "tcp",
+      "hostAddress": "127.0.0.1",
+      "hostPort": 9090,
+      "guestPort": 9090
+    },
+    {
+      "protocol": "tcp",
+      "hostAddress": "127.0.0.1",
+      "hostPort": 8080,
+      "guestPort": 9092
+    },
+    {
+      "protocol": "tcp",
+      "hostAddress": "127.0.0.1",
+      "hostPort": 9092,
+      "guestPort": 9092
+    },
+    {
+      "protocol": "tcp",
+      "hostAddress": "127.0.0.1",
+      "hostPort": 3002,
+      "guestPort": 3000
+    },
+    {
+      "protocol": "tcp",
+      "hostAddress": "127.0.0.1",
+      "hostPort": 2222,
+      "guestPort": 22
+    }
+  ],
+  "vnc": {
+    "enabled": true,
+    "address": "127.0.0.1",
+    "display": 1
+  },
+  "tray": {
+    "enabled": false,
+    "tooltip": "AminoVM",
+    "cockpitUrl": "https://127.0.0.1:9090"
+  }
 }

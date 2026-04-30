@@ -1,0 +1,21 @@
+node_modules/
+
+# Local VM/runtime artifacts
+qemu/
+imgbackup/
+*.img
+*.qcow
+*.qcow2
+*.iso
+*.log
+*.pid
+.aminovm.pid.json
+
+# Built launchers
+*.exe
+aminovm-linux-x64
+aminovm-macos-x64
+
+# Local environment
+.env
+.env.*

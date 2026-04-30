@@ -18,10 +18,10 @@ const qemuPath = path.join('qemu', 'qemu-system-x86_64.exe'); // Relative path t
 // Remeber if you plan on installing a new image you need to have a blank .img file using (qemu-img create -f qcow2 c://path//to/file.img 20G)
 
 const imgPath = path.resolve('deb.img'); // Absolute path to disk image
-const isoPath = path.resolve('debian-12.0.0-amd64-netinst.iso'); // Absolute path to ISO
+const isoPath = path.resolve('debian-13.3.0-amd64-netinst.iso'); // Absolute path to ISO
 
 // Name for the title
-const vmName = 'VPN VM LAUNCHER';
+const vmName = 'AminoVM';
 
 function launchVM() {
     // Check if QEMU executable exists
@@ -36,8 +36,8 @@ function launchVM() {
 
     // Define the arguments for the QEMU process
     const args = [
-        '-m', '2048',
-        '-smp', '2',
+        '-m', '8192',
+        '-smp', '8',
         '-hda', imgPath,
         '-cdrom', isoPath, // Include the ISO argument
         '-boot', 'd', 

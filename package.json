@@ -1,22 +1,29 @@
 {
-  "name": "vpn-vm-launcher",
+  "name": "aminovm",
   "version": "1.0.0",
   "main": "index.js",
-  "bin": "index.js",
+  "bin": {
+    "aminovm": "index.js",
+    "amino": "index.js"
+  },
   "pkg": {
     "assets": [
       "qemu/*"
     ],
     "windows": {
-      "console": false
+      "console": true
     },
     "icon": ""
   },
   "scripts": {
-    "start": "node index.js",
-    "build": "pkg . --targets node14-win-x64 --output vpn-vm-launcher.exe --debug --win-console=false",
-    "build:console": "pkg . --targets node14-win-x64 --output vpn-vm-launcher.exe --debug --win-console=true",
-    "build:hidden": "pkg . --targets node14-win-x64 --output vpn-vm-launcher.exe --debug --win-console=false"
+    "start": "node index.js launch",
+    "disk:info": "node resize-disk.js --info",
+    "disk:grow": "node resize-disk.js",
+    "build": "pkg . --targets node14-win-x64 --output aminovm.exe --debug --win-console=true",
+    "build:console": "pkg . --targets node14-win-x64 --output aminovm.exe --debug --win-console=true",
+    "build:hidden": "pkg . --targets node14-win-x64 --output aminovm.exe --debug --win-console=false",
+    "build:linux": "pkg . --targets node14-linux-x64 --output aminovm-linux-x64 --debug",
+    "build:macos": "pkg . --targets node14-macos-x64 --output aminovm-macos-x64 --debug"
   },
   "dependencies": {
     "dotenv": "^16.4.5",
