@@ -6,6 +6,11 @@ imgbackup/
 *.img
 *.qcow
 *.qcow2
+*.raw
+*.vdi
+*.vmdk
+*.vhd
+*.vhdx
 *.iso
 *.log
 *.pid
@@ -19,3 +24,21 @@ aminovm-macos-x64
 # Local environment
 .env
 .env.*
+
+# Secrets and VPN credentials
+*.key
+*.pem
+*.p12
+*.pfx
+*.ovpn
+wg*.conf
+wireguard/*.conf
+id_rsa*
+id_ed25519*
+
+# Local archives/export bundles
+*.zip
+*.7z
+*.tar
+*.tar.gz
+*.tgz
