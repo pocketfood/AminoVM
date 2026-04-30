@@ -26,8 +26,8 @@ This is the current known-good state. Do not change it unless there is a specifi
 ## Guest networking behavior
 
 - `Wired connection 1` should come up normally on boot
-- `calcium-office` VPN should stay OFF by default
-- Turn `calcium-office` ON manually only when remote subnet access is needed
+- `office.ovpn` VPN should stay OFF by default
+- Turn `office.ovpn` ON manually only when remote subnet access is needed
 - `http://localhost:3002` works only while the VPN is connected
 - `https://localhost:9090` works without the VPN
 
@@ -43,7 +43,7 @@ The guest is healthy when:
 
 - `ens3` is connected on `Wired connection 1`
 - `lo` is connected
-- `calcium-office` is not active until manually enabled
+- `office.ovpn` is not active until manually enabled
 
 ## Rule
 

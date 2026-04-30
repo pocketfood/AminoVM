@@ -22,16 +22,16 @@ Temporary test route for the known Gitea host:
 sudo ip route replace 10.8.0.14/32 via 10.8.0.21 dev tun0 && ip route get 10.8.0.14
 ```
 
-Persistent NetworkManager route on the `calcium-office` VPN connection:
+Persistent NetworkManager route on the `office.ovpn` VPN connection:
 
 ```bash
-sudo nmcli connection modify calcium-office +ipv4.routes "10.8.0.14/32 10.8.0.21" && sudo nmcli connection down calcium-office && sudo nmcli connection up calcium-office
+sudo nmcli connection modify "office.ovpn" +ipv4.routes "10.8.0.14/32 10.8.0.21" && sudo nmcli connection down "office.ovpn" && sudo nmcli connection up "office.ovpn"
 ```
 
 If the whole remote subnet should go over the VPN, use a wider route instead:
 
 ```bash
-sudo nmcli connection modify calcium-office +ipv4.routes "10.8.0.0/24 10.8.0.21" && sudo nmcli connection down calcium-office && sudo nmcli connection up calcium-office
+sudo nmcli connection modify "office.ovpn" +ipv4.routes "10.8.0.0/24 10.8.0.21" && sudo nmcli connection down "office.ovpn" && sudo nmcli connection up "office.ovpn"
 ```
 
 ## Create local Gitea proxy for `10.8.0.14:3000`

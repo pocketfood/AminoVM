@@ -27,8 +27,8 @@ If the guest gets stuck with `Wired` endlessly connecting or the VPN autostart b
 ```bash
 sudo systemctl disable --now amino-vpn-connect.service 2>/dev/null || true
 sudo nmcli connection modify "Wired connection 1" connection.secondaries ""
-sudo nmcli connection modify "calcium-office" ipv4.routes ""
-sudo nmcli connection down "calcium-office" || true
+sudo nmcli connection modify "office.ovpn" ipv4.routes ""
+sudo nmcli connection down "office.ovpn" || true
 sudo nmcli connection down "Wired connection 1" || true
 sudo systemctl restart NetworkManager
 sleep 5
@@ -48,7 +48,7 @@ That returns the guest to the previous manual model:
 Paste this once inside Debian:
 
 ```bash
-VPN_NAME='calcium-office'
+VPN_NAME='office.ovpn'
 BASE_NAME='Wired connection 1'
 VPN_UUID="$(nmcli -g connection.uuid connection show "$VPN_NAME")"
 sudo nmcli connection modify "$VPN_NAME" connection.permissions "" vpn.persistent yes
@@ -69,13 +69,13 @@ Official NetworkManager behavior: VPN profiles do not autoconnect by themselves;
 
 Assumes:
 
-- VPN profile name: `calcium-office`
+- VPN profile name: `office.ovpn`
 - Base connection name: `Wired connection 1`
 
 Paste inside Debian:
 
 ```bash
-VPN_NAME='calcium-office'; BASE_NAME='Wired connection 1'; VPN_UUID="$(nmcli -g connection.uuid connection show "$VPN_NAME")"; sudo nmcli connection modify "$VPN_NAME" connection.permissions "" vpn.persistent yes; sudo nmcli connection modify "$BASE_NAME" connection.autoconnect yes connection.secondaries "$VPN_UUID"; sudo systemctl enable NetworkManager-wait-online.service; nmcli -f connection.id,connection.uuid,connection.permissions,vpn.persistent connection show "$VPN_NAME"; nmcli -f connection.id,connection.autoconnect,connection.secondaries connection show "$BASE_NAME"
+VPN_NAME='office.ovpn'; BASE_NAME='Wired connection 1'; VPN_UUID="$(nmcli -g connection.uuid connection show "$VPN_NAME")"; sudo nmcli connection modify "$VPN_NAME" connection.permissions "" vpn.persistent yes; sudo nmcli connection modify "$BASE_NAME" connection.autoconnect yes connection.secondaries "$VPN_UUID"; sudo systemctl enable NetworkManager-wait-online.service; nmcli -f connection.id,connection.uuid,connection.permissions,vpn.persistent connection show "$VPN_NAME"; nmcli -f connection.id,connection.autoconnect,connection.secondaries connection show "$BASE_NAME"
 ```
 
 ## Persist The VPN Route For The Remote Subnet
@@ -85,8 +85,8 @@ If the remote VPN hosts live on `10.8.0.0/24`, add an explicit route on the VPN 
 Paste inside Debian:
 
 ```bash
-sudo nmcli connection modify calcium-office +ipv4.routes "10.8.0.0/24 10.8.0.21"
-sudo nmcli connection down calcium-office || true
+sudo nmcli connection modify "office.ovpn" +ipv4.routes "10.8.0.0/24 10.8.0.21"
+sudo nmcli connection down "office.ovpn" || true
 sudo nmcli connection down "Wired connection 1" || true
 sudo nmcli connection up "Wired connection 1"
 ip route get 10.8.0.14
@@ -95,7 +95,7 @@ ip route get 10.8.0.14
 If you want to keep it narrower, use only the known Gitea host:
 
 ```bash
-sudo nmcli connection modify calcium-office +ipv4.routes "10.8.0.14/32 10.8.0.21"
+sudo nmcli connection modify "office.ovpn" +ipv4.routes "10.8.0.14/32 10.8.0.21"
 ```
 
 ## Fallback If `connection.secondaries` Fails
@@ -111,13 +111,13 @@ sudo nmcli connection modify "Wired connection 1" connection.secondaries ""
 Test that the VPN can be brought up directly:
 
 ```bash
-sudo nmcli connection up "calcium-office" ifname ens3
+sudo nmcli connection up "office.ovpn" ifname ens3
 ```
 
 If that works, make it persistent at boot:
 
 ```bash
-printf '%s\n' '[Unit]' 'Description=Bring up calcium-office VPN after NetworkManager is online' 'After=NetworkManager.service NetworkManager-wait-online.service' 'Wants=NetworkManager-wait-online.service' '' '[Service]' 'Type=oneshot' 'ExecStart=/usr/bin/nmcli connection up "calcium-office" ifname ens3' 'RemainAfterExit=yes' '' '[Install]' 'WantedBy=multi-user.target' | sudo tee /etc/systemd/system/amino-vpn-connect.service >/dev/null && sudo systemctl daemon-reload && sudo systemctl enable amino-vpn-connect.service && sudo systemctl start amino-vpn-connect.service && nmcli -f NAME,TYPE,DEVICE con show --active && ip route get 10.8.0.14
+printf '%s\n' '[Unit]' 'Description=Bring up office.ovpn VPN after NetworkManager is online' 'After=NetworkManager.service NetworkManager-wait-online.service' 'Wants=NetworkManager-wait-online.service' '' '[Service]' 'Type=oneshot' 'ExecStart=/usr/bin/nmcli connection up "office.ovpn" ifname ens3' 'RemainAfterExit=yes' '' '[Install]' 'WantedBy=multi-user.target' | sudo tee /etc/systemd/system/amino-vpn-connect.service >/dev/null && sudo systemctl daemon-reload && sudo systemctl enable amino-vpn-connect.service && sudo systemctl start amino-vpn-connect.service && nmcli -f NAME,TYPE,DEVICE con show --active && ip route get 10.8.0.14
 ```
 
 This is a pragmatic fallback: NetworkManager still manages the VPN, but systemd triggers the initial connection as root at boot.
@@ -137,7 +137,7 @@ That means the VPN secret is not stored in the system connection profile.
 First inspect the current profile:
 
 ```bash
-sudo nmcli --show-secrets connection show calcium-office | sed -n '/^connection\./p;/^vpn\./p'
+sudo nmcli --show-secrets connection show "office.ovpn" | sed -n '/^connection\./p;/^vpn\./p'
 ```
 
 If you still see agent-owned or not-saved secret flags, store the password in the system profile. The NetworkManager keyfile format stores VPN data under `[vpn]` and VPN secrets under `[vpn-secrets]`.
@@ -145,7 +145,7 @@ If you still see agent-owned or not-saved secret flags, store the password in th
 Find the keyfile:
 
 ```bash
-sudo grep -Ril '^id=calcium-office$' /etc/NetworkManager/system-connections
+sudo grep -Ril '^id=office\.ovpn$' /etc/NetworkManager/system-connections
 ```
 
 Then edit it as root so it contains:
@@ -163,7 +163,7 @@ After editing:
 ```bash
 sudo chmod 600 /etc/NetworkManager/system-connections/*
 sudo nmcli connection reload
-sudo nmcli connection down calcium-office || true
+sudo nmcli connection down "office.ovpn" || true
 sudo nmcli connection up "Wired connection 1"
 ```
 
